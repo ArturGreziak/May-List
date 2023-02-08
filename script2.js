@@ -13,7 +13,7 @@ const getTotoList = () =>{
   }
 }
 
-getTotoList();  
+getTotoList();
 
 document.addEventListener('DOMContentLoaded', () => {
   ul = document.getElementById('todoList');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
           todoName.value = "";
           todoDesc.value = "";
 
-          renderList();
+          
 
         } else {
           if(todoName.value.length < 3){
