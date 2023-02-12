@@ -1,131 +1,66 @@
-let ul;
-let todoForm;
-let todoList;
+const canvas = document.getElementById('canvas');
+const newProjectBtn = document.getElementById('new__project');
+const sizeInput = document.getElementById('size');
+const colorInput = document.getElementById('color');
 
-localStorage.setItem('artur', "greziak");
-console.log(localStorage.getItem('artur'));
+let context = canvas.getContext('2d');
+let isMouseDown = false;
+let color = "#000";
+let size = 10;
+let x,y;
 
-const getTotoList = () =>{
-  if(localStorage.getItem('todoList')){
-    todoList = JSON.parse(localStorage.getItem('todoList'))
-  } else {
-    todoList = [];
-  }
+function drawCircle(x, y){
+  context.beginPath();
+  context.arc(x, y, size, 0, Math.PI * 2);
+  context.filleStyle = color;
+  context.fill();
 }
 
-getTotoList();
+function drawLine(x1, y1, x2, y2){
+  context.beginPath();
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.strokeStyle = color;
+  context.lineWidth = size * 2;
+  context.stroke();
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  ul = document.getElementById('todoList');
-  todoForm = document.getElementById('todoForm');
-  let todoNameError = document.getElementById('todoNameError');
-  let todoDescError = document.getElementById('todoDescError');
+newProjectBtn.addEventListener('click', function (e){
+  context.clearRect(0, 0, canvas.width, canvas.height);
+})
 
-    todoForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        let todoName = event.target.elements[0];
-        let todoDesc = event.target.elements[1];
+sizeInput.addEventListener('change', function (e){
+  size = document.getElementById('size').value;
+})
 
-        if(todoName.value.length > 2 && todoDesc.value.length > 20){
-          let newTodo = {
-          
-          name: todoName.value,
-          desc: todoDesc.value,
-          done: false
-        }
+colorInput.addEventListener('change', function (e){
+  color = document.getElementById('color').value;
+})
 
-        for(let todo of todoList){
-          if(todo.name === todoName.value && todo.desc === todoDesc.value){
-            return;
-          }
-        }
-          todoList.push(newTodo);
-          localStorage.setItem('todoList', JSON.stringify(todoList));
-          todoName.value = "";
-          todoDesc.value = "";
+canvas.addEventListener("mousedown", function(e){
+    isMouseDown = true;
 
-          
-
-        } else {
-          if(todoName.value.length < 3){
-            todoName.classList.add('input-danger');
-            todoName.classList.add('input-info-danger');
-            todoNameError.innerText = "Nazwa jest za krótka!"
-          }
-
-          if(todoDesc.value.length < 20){
-            todoDesc.classList.add('input-danger');
-            todoName.classList.add('input-info-danger');
-            todoDescError.innerText = "Opis jest za krótki, trzeba dodać (min 20 znaków)!"
-          }
-        }
-
-        if(todoName.value.length > 2){
-          todoName.classList.remove('input-danger');
-          todoName.classList.remove('input-info-danger');
-          todoNameError.innerText = "";
-        }
-
-        if(todoDesc.value.length > 20){
-          todoDesc.classList.remove('input-danger');
-          todoName.classList.remove('input-info-danger');
-          todoDescError.innerText = "";
-        }
-    })
+    x = e.offsetX;
+    y = e.offsetY;
 });
 
-const renderList = () =>{
-  let liList = Array.from(ul.getElementByTagName('li'));
+canvas.addEventListener("mousemove", function(e){
+    if(!isMouseDown) return;
 
-  liList.forEach((li) => {
-    let button = li.getElementByTagName('button')[0];
-    button.removeEventListener('click', changeTaskStatus)
-  })
+   let x2 = e.offsetX;
+   let y2 = e.offsetY;
 
-  ul.innerHTML = "";
+   drawCircle(x2, y2);
+   drawLine(x, y, x2, y2);
 
-          todoList.forEach((todo, index) => {
-            let li = document.createElement('li');
-            li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-            let main = document.createElement('main');
-            let heading = document.createElement('h5');
-            let paragraph = document.createElement('p');
-            let button = document.createElement('button');
+   x = x2;
+   y = y2;
+})
 
-            button.classList.add('btn', 'btn-primary', 'btn-sm');
-            button.addEventListener('click', changeTaskStatus)
-            button.dataset.taskId = index;
+canvas.addEventListener("mouseup", function(e){
+  isMouseDown = false;
 
-            if(!todo.done){
-              button.innerText = "finish";
-              button.classList.add('btn', 'btn-success', 'btn-sm');
-              } else {
-              button.innerText = "revert";
-              button.classList.add('btn', 'btn-danger', 'btn-sm');
-              main.style.textDecoration = "line-through";
-            }
+  x = null;
+  y = null;
 
-            heading.innerText = todo.name;
-            paragraph.innerText = todo.desc;
-
-            main.appendChild(heading);
-            main.appendChild(paragraph);
-
-            li.appendChild(main);
-            li.appendChild(button);
-
-            ul.appendChild(li);
-
-          });
-
-        }
-
-            const changeTaskStatus = (event) => {
-              let todo = todoList[Math.round(event.target.dataset.taskId)];
-              if(todo.done === true){
-                todo.done = false;
-              } else {
-                todo.done = true;
-              }
-              renderList();
-            }
+})
