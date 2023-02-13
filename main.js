@@ -1,6 +1,6 @@
-let lat;
-let long;
-const apiKey = "248d369aa6322178f4f2620b2da7f29c";
+let lat = document.getElementById('lat').value;
+let long = document.getElementById('long').value;
+let apiKey = "248d369aa6322178f4f2620b2da7f29c";
 
 function startApp(){
 
